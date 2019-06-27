@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/include",
+				"${workspaceFolder}/include/uapi",
+                "${workspaceFolder}/arch/arm64/include",
+				"${workspaceFolder}/arch/arm64/include/uapi",
+                "${workspaceFolder}/arch/arm64/include/generated",
+				"${workspaceFolder}/arch/arm64/include/generated/uapi",
+                "${workspaceFolder}/compiler/include"
+            ],
+            "defines": [
+				"__ASSEMBLY__",
+                "__GNUC__",
+                "__KERNEL__"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}
