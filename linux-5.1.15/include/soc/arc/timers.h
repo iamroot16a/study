@@ -9,7 +9,7 @@
 #ifndef __SOC_ARC_TIMERS_H
 #define __SOC_ARC_TIMERS_H
 
-#include <soc/arc/aux.h>
+#include <soc/arc/aux_.h>
 
 /* Timer related Aux registers */
 #define ARC_REG_TIMER0_LIMIT	0x23	/* timer 0 limit */

@@ -21,7 +21,7 @@
  *
  * Authors: Ben Skeggs
  */
-#include "aux.h"
+#include "aux_.h"
 #include "pad.h"
 
 static int
