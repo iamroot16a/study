@@ -1,0 +1,20 @@
+{
+        "files.associations":
+        {
+                "__config": "cpp",
+                "*.json": "jsonc",
+                "*.s": "c",
+                "*.h": "c"
+        },
+
+        "files.autoSave": "off",
+        "editor.tabSize": 8,
+
+        "editor.insertSpaces": false,
+        "editor.autoIndent": false,
+        "typescript.disableAutomaticTypeAcquisition": false,
+        "C_Cpp.autocomplete": "Disabled",
+        "C_Cpp.errorSquiggles": "Disabled",
+        "editor.renderWhitespace": "boundary",
+        "git.enabled": false
+}
