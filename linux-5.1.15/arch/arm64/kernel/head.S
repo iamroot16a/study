@@ -115,7 +115,7 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
-	bl	preserve_boot_args
+	bl	preserve_boot_args							//@1 
 	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
 	adrp	x23, __PHYS_OFFSET
 	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0
@@ -135,17 +135,17 @@ ENDPROC(stext)
  * Preserve the arguments passed by the bootloader in x0 .. x3
  */
 preserve_boot_args:
-	mov	x21, x0				// x21=FDT
+	mov	x21, x0				// x21=FDT				// @2
 
-	adr_l	x0, boot_args			// record the contents of
-	stp	x21, x1, [x0]			// x0 .. x3 at kernel entry
-	stp	x2, x3, [x0, #16]
+	adr_l	x0, boot_args			// record the contents of		// @3
+	stp	x21, x1, [x0]			// x0 .. x3 at kernel entry		// @4
+	stp	x2, x3, [x0, #16]							// @4
 
-	dmb	sy				// needed before dc ivac with
+	dmb	sy				// needed before dc ivac with		// @5
 						// MMU off
 
-	mov	x1, #0x20			// 4 x 8 bytes
-	b	__inval_dcache_area		// tail call
+	mov	x1, #0x20			// 4 x 8 bytes				// @6
+	b	__inval_dcache_area		// tail call				// @7
 ENDPROC(preserve_boot_args)
 
 /*
