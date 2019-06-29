@@ -115,12 +115,12 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
-	bl	preserve_boot_args							//@1 
-	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
-	adrp	x23, __PHYS_OFFSET
-	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0
-	bl	set_cpu_boot_mode_flag
-	bl	__create_page_tables
+	bl	preserve_boot_args							// @1 
+	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode	// @8
+	adrp	x23, __PHYS_OFFSET							// @17
+	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0		// @18
+	bl	set_cpu_boot_mode_flag							// @19
+	bl	__create_page_tables							// @25
 	/*
 	 * The following calls CPU setup code, see arch/arm64/mm/proc.S for
 	 * details.
@@ -285,7 +285,7 @@ ENDPROC(preserve_boot_args)
  *     been enabled
  */
 __create_page_tables:
-	mov	x28, lr
+	mov	x28, lr						// @26
 
 	/*
 	 * Invalidate the init page tables to avoid potential dirty cache lines
@@ -293,25 +293,25 @@ __create_page_tables:
 	 * the kernel image, and thus are clean to the PoC per the boot
 	 * protocol.
 	 */
-	adrp	x0, init_pg_dir
-	adrp	x1, init_pg_end
-	sub	x1, x1, x0
-	bl	__inval_dcache_area
+	adrp	x0, init_pg_dir					// @27
+	adrp	x1, init_pg_end					// @27
+	sub	x1, x1, x0					// @28
+	bl	__inval_dcache_area				// @29
 
 	/*
 	 * Clear the init page tables.
 	 */
-	adrp	x0, init_pg_dir
-	adrp	x1, init_pg_end
-	sub	x1, x1, x0
-1:	stp	xzr, xzr, [x0], #16
-	stp	xzr, xzr, [x0], #16
-	stp	xzr, xzr, [x0], #16
-	stp	xzr, xzr, [x0], #16
-	subs	x1, x1, #64
-	b.ne	1b
+	adrp	x0, init_pg_dir					// @30
+	adrp	x1, init_pg_end					// @30
+	sub	x1, x1, x0					// @31
+1:	stp	xzr, xzr, [x0], #16				// @32
+	stp	xzr, xzr, [x0], #16				// @32
+	stp	xzr, xzr, [x0], #16				// @32
+	stp	xzr, xzr, [x0], #16				// @32
+	subs	x1, x1, #64					// @33
+	b.ne	1b						// @33
 
-	mov	x7, SWAPPER_MM_MMUFLAGS
+	mov	x7, SWAPPER_MM_MMUFLAGS				// @34
 
 	/*
 	 * Create the identity mapping.
@@ -485,15 +485,15 @@ EXPORT_SYMBOL(kimage_vaddr)
  * booted in EL1 or EL2 respectively.
  */
 ENTRY(el2_setup)
-	msr	SPsel, #1			// We want to use SP_EL{1,2}
-	mrs	x0, CurrentEL
-	cmp	x0, #CurrentEL_EL2
-	b.eq	1f
-	mov_q	x0, (SCTLR_EL1_RES1 | ENDIAN_SET_EL1)
-	msr	sctlr_el1, x0
-	mov	w0, #BOOT_CPU_MODE_EL1		// This cpu booted in EL1
+	msr	SPsel, #1			// We want to use SP_EL{1,2}	// @9
+	mrs	x0, CurrentEL							// @10
+	cmp	x0, #CurrentEL_EL2						// @11
+	b.eq	1f								// @12
+	mov_q	x0, (SCTLR_EL1_RES1 | ENDIAN_SET_EL1)				// @13
+	msr	sctlr_el1, x0							// @14
+	mov	w0, #BOOT_CPU_MODE_EL1		// This cpu booted in EL1	// @15
 	isb
-	ret
+	ret									// @16
 
 1:	mov_q	x0, (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
 	msr	sctlr_el2, x0
@@ -652,13 +652,13 @@ ENDPROC(el2_setup)
  * in w0. See arch/arm64/include/asm/virt.h for more info.
  */
 set_cpu_boot_mode_flag:
-	adr_l	x1, __boot_cpu_mode
-	cmp	w0, #BOOT_CPU_MODE_EL2
-	b.ne	1f
+	adr_l	x1, __boot_cpu_mode								// @20
+	cmp	w0, #BOOT_CPU_MODE_EL2								// @21
+	b.ne	1f										// @22
 	add	x1, x1, #4
-1:	str	w0, [x1]			// This CPU has booted in EL1
+1:	str	w0, [x1]			// This CPU has booted in EL1			// @23
 	dmb	sy
-	dc	ivac, x1			// Invalidate potentially stale cache line
+	dc	ivac, x1			// Invalidate potentially stale cache line	// @24
 	ret
 ENDPROC(set_cpu_boot_mode_flag)
 
