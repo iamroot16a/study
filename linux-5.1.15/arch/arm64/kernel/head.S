@@ -115,12 +115,12 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
-	bl	preserve_boot_args							// @1 
-	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode	// @8
-	adrp	x23, __PHYS_OFFSET							// @17
-	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0		// @18
-	bl	set_cpu_boot_mode_flag							// @19
-	bl	__create_page_tables							// @25
+	bl	preserve_boot_args							// @1	stext
+	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode	// @8	stext+8
+	adrp	x23, __PHYS_OFFSET							// @17	stext+16
+	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0		// @18	stext+24
+	bl	set_cpu_boot_mode_flag							// @19	stext+32
+	bl	__create_page_tables							// @25	stext+40
 	/*
 	 * The following calls CPU setup code, see arch/arm64/mm/proc.S for
 	 * details.
