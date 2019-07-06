@@ -116,19 +116,19 @@ pe_header:
 	 */
 ENTRY(stext)
 	bl	preserve_boot_args							// @1	stext
-	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode	// @8	stext+8
-	adrp	x23, __PHYS_OFFSET							// @17	stext+16
-	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0		// @18	stext+24
-	bl	set_cpu_boot_mode_flag							// @19	stext+32
-	bl	__create_page_tables							// @25	stext+40
+	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode	// @8	stext+4
+	adrp	x23, __PHYS_OFFSET							// @17	stext+8
+	and	x23, x23, MIN_KIMG_ALIGN - 1	// KASLR offset, defaults to 0		// @18	stext+12
+	bl	set_cpu_boot_mode_flag							// @19	stext+16
+	bl	__create_page_tables							// @25	stext+20
 	/*
 	 * The following calls CPU setup code, see arch/arm64/mm/proc.S for
 	 * details.
 	 * On return, the CPU will be ready for the MMU to be turned on and
 	 * the TCR will have been set.
 	 */
-	bl	__cpu_setup			// initialise processor
-	b	__primary_switch
+	bl	__cpu_setup			// initialise processor			// @ 	stext+24
+	b	__primary_switch							// @	stext+28
 ENDPROC(stext)
 
 /*
@@ -316,8 +316,8 @@ __create_page_tables:
 	/*
 	 * Create the identity mapping.
 	 */
-	adrp	x0, idmap_pg_dir
-	adrp	x3, __idmap_text_start		// __pa(__idmap_text_start)
+	adrp	x0, idmap_pg_dir						// @35
+	adrp	x3, __idmap_text_start		// __pa(__idmap_text_start)	// @36
 
 #ifdef CONFIG_ARM64_USER_VA_BITS_52
 	mrs_s	x6, SYS_ID_AA64MMFR2_EL1
@@ -325,12 +325,12 @@ __create_page_tables:
 	mov	x5, #52
 	cbnz	x6, 1f
 #endif
-	mov	x5, #VA_BITS
+	mov	x5, #VA_BITS							// @37
 1:
-	adr_l	x6, vabits_user
-	str	x5, [x6]
-	dmb	sy
-	dc	ivac, x6		// Invalidate potentially stale cache line
+	adr_l	x6, vabits_user								// @38
+	str	x5, [x6]								// @38
+	dmb	sy									// @38
+	dc	ivac, x6		// Invalidate potentially stale cache line	// @38
 
 	/*
 	 * VA_BITS may be too small to allow for an ID mapping to be created
@@ -344,15 +344,15 @@ __create_page_tables:
 	 * this number conveniently equals the number of leading zeroes in
 	 * the physical address of __idmap_text_end.
 	 */
-	adrp	x5, __idmap_text_end
-	clz	x5, x5
-	cmp	x5, TCR_T0SZ(VA_BITS)	// default T0SZ small enough?
-	b.ge	1f			// .. then skip VA range extension
+	adrp	x5, __idmap_text_end							// @39
+	clz	x5, x5									// @39
+	cmp	x5, TCR_T0SZ(VA_BITS)	// default T0SZ small enough?			// @39
+	b.ge	1f			// .. then skip VA range extension		// @39
 
-	adr_l	x6, idmap_t0sz
-	str	x5, [x6]
-	dmb	sy
-	dc	ivac, x6		// Invalidate potentially stale cache line
+	adr_l	x6, idmap_t0sz								// @40
+	str	x5, [x6]								// @40
+	dmb	sy									// @40
+	dc	ivac, x6		// Invalidate potentially stale cache line	// @40
 
 #if (VA_BITS < 48)
 #define EXTRA_SHIFT	(PGDIR_SHIFT + PAGE_SHIFT - 3)
@@ -376,15 +376,15 @@ __create_page_tables:
 	 * If VA_BITS == 48, we don't have to configure an additional
 	 * translation level, but the top-level table has more entries.
 	 */
-	mov	x4, #1 << (PHYS_MASK_SHIFT - PGDIR_SHIFT)
-	str_l	x4, idmap_ptrs_per_pgd, x5
+	mov	x4, #1 << (PHYS_MASK_SHIFT - PGDIR_SHIFT)			// @41
+	str_l	x4, idmap_ptrs_per_pgd, x5					// @41
 #endif
 1:
-	ldr_l	x4, idmap_ptrs_per_pgd
-	mov	x5, x3				// __pa(__idmap_text_start)
-	adr_l	x6, __idmap_text_end		// __pa(__idmap_text_end)
+	ldr_l	x4, idmap_ptrs_per_pgd						// @42
+	mov	x5, x3				// __pa(__idmap_text_start)	// @42
+	adr_l	x6, __idmap_text_end		// __pa(__idmap_text_end)	// @42
 
-	map_memory x0, x1, x3, x6, x7, x3, x4, x10, x11, x12, x13, x14
+	map_memory x0, x1, x3, x6, x7, x3, x4, x10, x11, x12, x13, x14		// @43
 
 	/*
 	 * Map the kernel image (starting with PHYS_OFFSET).
