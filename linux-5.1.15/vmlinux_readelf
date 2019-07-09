@@ -1,0 +1,120 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           AArch64
+  Version:                           0x1
+  Entry point address:               0xffff000010080000
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          261028736 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         4
+  Size of section headers:           64 (bytes)
+  Number of section headers:         36
+  Section header string table index: 35
+
+Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NULL             0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .head.text        PROGBITS         ffff000010080000  00010000
+       0000000000001000  0000000000000000  AX       0     0     4096
+  [ 2] .text             PROGBITS         ffff000010081000  00011000
+       0000000000b11740  0000000000000000  AX       0     0     2048
+  [ 3] .rodata           PROGBITS         ffff000010ba0000  00b30000
+       0000000000523488  0000000000000000  WA       0     0     4096
+  [ 4] .pci_fixup        PROGBITS         ffff0000110c3490  01053490
+       00000000000021e0  0000000000000000   A       0     0     16
+  [ 5] __ksymtab         PROGBITS         ffff0000110c5670  01055670
+       0000000000009ba8  0000000000000000   A       0     0     8
+  [ 6] __ksymtab_gpl     PROGBITS         ffff0000110cf218  0105f218
+       000000000000b528  0000000000000000   A       0     0     8
+  [ 7] __ksymtab_strings PROGBITS         ffff0000110da740  0106a740
+       0000000000034747  0000000000000000   A       0     0     1
+  [ 8] __param           PROGBITS         ffff00001110ee88  0109ee88
+       0000000000003728  0000000000000000   A       0     0     8
+  [ 9] __modver          PROGBITS         ffff0000111125b0  010a25b0
+       0000000000000a50  0000000000000000   A       0     0     8
+  [10] __ex_table        PROGBITS         ffff000011113000  010a3000
+       0000000000002528  0000000000000000   A       0     0     8
+  [11] .notes            NOTE             ffff000011115528  010a5528
+       000000000000003c  0000000000000000   A       0     0     4
+  [12] .init.text        PROGBITS         ffff000011120000  010b0000
+       0000000000065c8c  0000000000000000  AX       0     0     8
+  [13] .exit.text        PROGBITS         ffff000011185c8c  01115c8c
+       0000000000004e3c  0000000000000000  AX       0     0     4
+  [14] .altinstructions  PROGBITS         ffff00001118aac8  0111aac8
+       0000000000040470  0000000000000000   A       0     0     1
+  [15] .altinstr_replace PROGBITS         ffff0000111caf38  0115af38
+       000000000001cb40  0000000000000000  AX       0     0     4
+  [16] .init.data        PROGBITS         ffff0000111e8000  01178000
+       00000000000862f8  0000000000000000  WA       0     0     256
+  [17] .data..percpu     PROGBITS         ffff00001126f000  011ff000
+       000000000000dd58  0000000000000000  WA       0     0     64
+  [18] .data             PROGBITS         ffff000011280000  01210000
+       0000000000199ca0  0000000000000000  WA       0     0     4096
+  [19] __bug_table       PROGBITS         ffff000011419ca0  013a9ca0
+       0000000000012354  0000000000000000  WA       0     0     4
+  [20] .mmuoff.data.writ PROGBITS         ffff00001142c000  013bc000
+       000000000000000c  0000000000000000  WA       0     0     2048
+  [21] .mmuoff.data.read PROGBITS         ffff00001142c800  013bc800
+       0000000000000008  0000000000000000  WA       0     0     8
+  [22] .pecoff_edata_pad PROGBITS         ffff00001142c808  013bc808
+       00000000000001f8  0000000000000000  WA       0     0     1
+  [23] .bss              NOBITS           ffff00001142d000  013bca00
+       000000000006f528  0000000000000000  WA       0     0     4096
+  [24] .comment          PROGBITS         0000000000000000  013bca00
+       0000000000000032  0000000000000001  MS       0     0     1
+  [25] .debug_line       PROGBITS         0000000000000000  013bca32
+       0000000000b68347  0000000000000000           0     0     1
+  [26] .debug_info       PROGBITS         0000000000000000  01f24d79
+       000000000b48ad75  0000000000000000           0     0     1
+  [27] .debug_abbrev     PROGBITS         0000000000000000  0d3afaee
+       0000000000572102  0000000000000000           0     0     1
+  [28] .debug_aranges    PROGBITS         0000000000000000  0d921bf0
+       000000000002f200  0000000000000000           0     0     16
+  [29] .debug_str        PROGBITS         0000000000000000  0d950df0
+       0000000000377ed2  0000000000000001  MS       0     0     1
+  [30] .debug_ranges     PROGBITS         0000000000000000  0dcc8cd0
+       000000000059efd0  0000000000000000           0     0     16
+  [31] .debug_loc        PROGBITS         0000000000000000  0e267ca0
+       0000000000e4873b  0000000000000000           0     0     1
+  [32] .debug_frame      PROGBITS         0000000000000000  0f0b03e0
+       0000000000304e48  0000000000000000           0     0     8
+  [33] .symtab           SYMTAB           0000000000000000  0f3b5228
+       000000000035bdb8  0000000000000018          34   123879     8
+  [34] .strtab           STRTAB           0000000000000000  0f710fe0
+       00000000001dea08  0000000000000000           0     0     1
+  [35] .shstrtab         STRTAB           0000000000000000  0f8ef9e8
+       0000000000000197  0000000000000000           0     0     1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  p (processor specific)
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  LOAD           0x0000000000010000 0xffff000010080000 0xffff000010080000
+                 0x0000000000b12740 0x0000000000b12740  R E    0x10000
+  LOAD           0x0000000000b30000 0xffff000010ba0000 0xffff000010ba0000
+                 0x000000000088ca00 0x00000000008fc528  RWE    0x10000
+  NOTE           0x00000000010a5528 0xffff000011115528 0xffff000011115528
+                 0x000000000000003c 0x000000000000003c  R      0x4
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x10
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .head.text .text 
+   01     .rodata .pci_fixup __ksymtab __ksymtab_gpl __ksymtab_strings __param __modver __ex_table .notes .init.text .exit.text .altinstructions .altinstr_replacement .init.data .data..percpu .data __bug_table .mmuoff.data.write .mmuoff.data.read .pecoff_edata_padding .bss 
+   02     .notes 
+   03     
