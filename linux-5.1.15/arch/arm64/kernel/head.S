@@ -188,13 +188,13 @@ ENDPROC(preserve_boot_args)
  * Returns:	rtbl
  */
 	.macro populate_entries, tbl, rtbl, index, eindex, flags, inc, tmp1
-.Lpe\@:	phys_to_pte \tmp1, \rtbl
-	orr	\tmp1, \tmp1, \flags	// tmp1 = table entry
-	str	\tmp1, [\tbl, \index, lsl #3]
-	add	\rtbl, \rtbl, \inc	// rtbl = pa next level
-	add	\index, \index, #1
-	cmp	\index, \eindex
-	b.ls	.Lpe\@
+.Lpe\@:	phys_to_pte \tmp1, \rtbl						// @43.3.1
+	orr	\tmp1, \tmp1, \flags	// tmp1 = table entry			// @43.3.1
+	str	\tmp1, [\tbl, \index, lsl #3]					// @43.3.1
+	add	\rtbl, \rtbl, \inc	// rtbl = pa next level			// @43.3.1
+	add	\index, \index, #1						// @43.3.1
+	cmp	\index, \eindex							// @43.3.1
+	b.ls	.Lpe\@								// @43.3.1
 	.endm
 
 /*
@@ -216,21 +216,21 @@ ENDPROC(preserve_boot_args)
  * Returns:	istart, iend, count
  */
 	.macro compute_indices, vstart, vend, shift, ptrs, istart, iend, count
-	lsr	\iend, \vend, \shift
-	mov	\istart, \ptrs
-	sub	\istart, \istart, #1
-	and	\iend, \iend, \istart	// iend = (vend >> shift) & (ptrs - 1)
-	mov	\istart, \ptrs
-	mul	\istart, \istart, \count
-	add	\iend, \iend, \istart	// iend += (count - 1) * ptrs
+	lsr	\iend, \vend, \shift							// @43.2.1
+	mov	\istart, \ptrs								// @43.2.1
+	sub	\istart, \istart, #1							// @43.2.1
+	and	\iend, \iend, \istart	// iend = (vend >> shift) & (ptrs - 1)		// @43.2.1
+	mov	\istart, \ptrs								// @43.2.1
+	mul	\istart, \istart, \count						// @43.2.1
+	add	\iend, \iend, \istart	// iend += (count - 1) * ptrs			// @43.2.1
 					// our entries span multiple tables
 
-	lsr	\istart, \vstart, \shift
-	mov	\count, \ptrs
-	sub	\count, \count, #1
-	and	\istart, \istart, \count
+	lsr	\istart, \vstart, \shift						// @43.2.1
+	mov	\count, \ptrs								// @43.2.1
+	sub	\count, \count, #1							// @43.2.1
+	and	\istart, \istart, \count						// @43.2.1
 
-	sub	\count, \iend, \istart
+	sub	\count, \iend, \istart							// @43.2.1
 	.endm
 
 /*
@@ -251,11 +251,11 @@ ENDPROC(preserve_boot_args)
  * Corrupts:	tbl, rtbl, istart, iend, tmp, count, sv
  */
 	.macro map_memory, tbl, rtbl, vstart, vend, flags, phys, pgds, istart, iend, tmp, count, sv
-	add \rtbl, \tbl, #PAGE_SIZE
-	mov \sv, \rtbl
-	mov \count, #0
-	compute_indices \vstart, \vend, #PGDIR_SHIFT, \pgds, \istart, \iend, \count
-	populate_entries \tbl, \rtbl, \istart, \iend, #PMD_TYPE_TABLE, #PAGE_SIZE, \tmp
+	add \rtbl, \tbl, #PAGE_SIZE								// @43.1
+	mov \sv, \rtbl										// @43.1
+	mov \count, #0										// @43.1
+	compute_indices \vstart, \vend, #PGDIR_SHIFT, \pgds, \istart, \iend, \count		// @43.2
+	populate_entries \tbl, \rtbl, \istart, \iend, #PMD_TYPE_TABLE, #PAGE_SIZE, \tmp		// @43.3
 	mov \tbl, \sv
 	mov \sv, \rtbl
 
@@ -267,14 +267,14 @@ ENDPROC(preserve_boot_args)
 #endif
 
 #if SWAPPER_PGTABLE_LEVELS > 2
-	compute_indices \vstart, \vend, #SWAPPER_TABLE_SHIFT, #PTRS_PER_PMD, \istart, \iend, \count
-	populate_entries \tbl, \rtbl, \istart, \iend, #PMD_TYPE_TABLE, #PAGE_SIZE, \tmp
-	mov \tbl, \sv
+	compute_indices \vstart, \vend, #SWAPPER_TABLE_SHIFT, #PTRS_PER_PMD, \istart, \iend, \count	// @43.4
+	populate_entries \tbl, \rtbl, \istart, \iend, #PMD_TYPE_TABLE, #PAGE_SIZE, \tmp			// @43.5
+	mov \tbl, \sv											// @43.6
 #endif
 
-	compute_indices \vstart, \vend, #SWAPPER_BLOCK_SHIFT, #PTRS_PER_PTE, \istart, \iend, \count
-	bic \count, \phys, #SWAPPER_BLOCK_SIZE - 1
-	populate_entries \tbl, \count, \istart, \iend, \flags, #SWAPPER_BLOCK_SIZE, \tmp
+	compute_indices \vstart, \vend, #SWAPPER_BLOCK_SHIFT, #PTRS_PER_PTE, \istart, \iend, \count	// @43.7
+	bic \count, \phys, #SWAPPER_BLOCK_SIZE - 1							// @43.8
+	populate_entries \tbl, \count, \istart, \iend, \flags, #SWAPPER_BLOCK_SIZE, \tmp		// @43.9
 	.endm
 
 /*
@@ -389,16 +389,16 @@ __create_page_tables:
 	/*
 	 * Map the kernel image (starting with PHYS_OFFSET).
 	 */
-	adrp	x0, init_pg_dir
-	mov_q	x5, KIMAGE_VADDR + TEXT_OFFSET	// compile time __va(_text)
-	add	x5, x5, x23			// add KASLR displacement
-	mov	x4, PTRS_PER_PGD
-	adrp	x6, _end			// runtime __pa(_end)
-	adrp	x3, _text			// runtime __pa(_text)
-	sub	x6, x6, x3			// _end - _text
-	add	x6, x6, x5			// runtime __va(_end)
+	adrp	x0, init_pg_dir							// @44
+	mov_q	x5, KIMAGE_VADDR + TEXT_OFFSET	// compile time __va(_text)	// @44
+	add	x5, x5, x23			// add KASLR displacement	// @44
+	mov	x4, PTRS_PER_PGD						// @44
+	adrp	x6, _end			// runtime __pa(_end)		// @44
+	adrp	x3, _text			// runtime __pa(_text)		// @44
+	sub	x6, x6, x3			// _end - _text			// @44
+	add	x6, x6, x5			// runtime __va(_end)		// @44
 
-	map_memory x0, x1, x5, x6, x7, x3, x4, x10, x11, x12, x13, x14
+	map_memory x0, x1, x5, x6, x7, x3, x4, x10, x11, x12, x13, x14		// @44
 
 	/*
 	 * Since the page tables have been populated with non-cacheable
